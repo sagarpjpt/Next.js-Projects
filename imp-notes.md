@@ -3,7 +3,7 @@
 ### layout and components
 
 - src/app/layout.js apply to all pages
-- loading layout -- loading.jsx is default loader provided by next.js 
+- loading layout -- loading.jsx is default loader provided by next.js
 - default error page error.jsx
 - Root layout wraps everything (HTML, body, global stuff)
 
@@ -16,17 +16,17 @@ Route layout wraps only that route and its children
 - next js dont allowed external img url by default have to config external domains
 
 - In newer Next.js App Router:
-params, searchParams, headers, cookies
-are async dynamic APIs
-accessing them synchronously throws on purpose
-to prevent accidental blocking during streaming
-So Next.js forces you to do one of:
-await params
-use(params)
+  params, searchParams, headers, cookies
+  are async dynamic APIs
+  accessing them synchronously throws on purpose
+  to prevent accidental blocking during streaming
+  So Next.js forces you to do one of:
+  await params
+  use(params)
 
 - Client Component → imports Server Component ❌ (NOT allowed)
-Client Component → imports another Client Component ✅
-Client Component → imports unmarked component ✅ (becomes client)
+  Client Component → imports another Client Component -
+  Client Component → imports unmarked component - (becomes client)
 
 - 1️⃣ Server Components (default)
 
@@ -37,7 +37,6 @@ Data fetching happens on the server
 Can directly use fetch, DB, secrets
 
 const data = await fetch(url).then(res => res.json());
-
 
 ✔ Fast
 ✔ Secure
@@ -50,10 +49,10 @@ Next.js extends fetch
 await fetch(url, { cache: "force-cache" });
 
 Cache options
-Option	Meaning
-force-cache	Static (default)
-no-store	Dynamic (no cache)
-revalidate: 10	ISR (revalidate every 10s)
+Option Meaning
+force-cache Static (default)
+no-store Dynamic (no cache)
+revalidate: 10 ISR (revalidate every 10s)
 fetch(url, { next: { revalidate: 10 } });
 
 3️⃣ Static Rendering (SSG)
@@ -63,7 +62,6 @@ Data fetched at build time
 Page is static
 
 fetch(url, { cache: "force-cache" });
-
 
 Use when:
 
@@ -77,7 +75,6 @@ Data fetched on every request
 
 fetch(url, { cache: "no-store" });
 
-
 Use when:
 
 User-specific data
@@ -90,7 +87,6 @@ Static page + background revalidation
 
 fetch(url, { next: { revalidate: 60 } });
 
-
 ✔ Fast
 ✔ Fresh data
 
@@ -99,15 +95,68 @@ fetch(url, { next: { revalidate: 60 } });
 Run multiple fetches together
 
 const [posts, users] = await Promise.all([
-  fetch(postsUrl),
-  fetch(usersUrl),
+fetch(postsUrl),
+fetch(usersUrl),
 ]);
 
 7️⃣ Streaming with Suspense
 Show UI while data loads
 <Suspense fallback={<Loading />}>
-  <Posts />
+<Posts />
 </Suspense>
 ✔ Better UX
 
 - client side data fetching with SWR
+
+- One-line takeaway
+  Server → call DB directly in case of
+  Client → call API
+  NEXT_PUBLIC_BASE_URL → only when HTTP is required eg from client component we use this
+
+------------------------------
+
+A-> When SHOULD you not use NEXT_PUBLIC_BASE_URL
+
+Call DB / service directly on the server
+
+Instead of this:
+fetch("/api/posts/...")
+
+Do this:
+
+import Post from "@/models/Post";
+import connectDB from "@/lib/connectDB";
+
+export async function getPost(id) {
+await connectDB();
+return Post.findById(id).lean();
+}
+
+Use it in:
+
+Page
+Metadata
+Server logic
+
+This is faster and cleaner.
+
+B-> When SHOULD you use NEXT_PUBLIC_BASE_URL
+
+- Client Components
+  fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/posts`)
+
+- External consumers
+
+Mobile apps
+Third-party services
+Edge functions
+
+- When frontend & backend are deployed separately
+
+--------------------------------------------
+
+------generating meta data------
+metadata = () => {} for static pages/data - sync function
+generateMetaData = () => {} for dynmaic pages/data - asyn function
+
+------next auth js------
