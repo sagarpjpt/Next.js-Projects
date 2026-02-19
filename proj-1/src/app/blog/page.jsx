@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 
 export async function getPosts() {
-  const res = await fetch("https://jsonplaceholder.typicode.com/posts", {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/posts`, {
     cache: "no-store",
   });
 
@@ -22,7 +22,7 @@ const Blog = async () => {
     <div className={styles.mainContainer}>
       {data.map((item) => (
         <Link
-          href={`/blog/${item.id}`}
+          href={`/blog/${item._id}`}
           className={styles.container}
           key={item.id}
         >

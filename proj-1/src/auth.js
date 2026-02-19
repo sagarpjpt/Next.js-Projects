@@ -1,4 +1,4 @@
-"use server";
+// "use server";
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -7,7 +7,10 @@ import User from "@/models/User";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
-    Google,
+    Google({
+      clientId: process.env.AUTH_GOOGLE_ID,
+      clientSecret: process.env.AUTH_GOOGLE_SECRET,
+    }),
     CredentialsProvider({
       id: "credentials",
       name: "Credentials",
@@ -21,6 +24,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           if (user.password !== credentials.password) {
             throw new Error("Incorrect password");
           }
+          console.log(user);
           return user;
         } catch (error) {
           throw new Error(error.message);
@@ -28,4 +32,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
     }),
   ],
+  pages: {
+    error: "/dashboard/login", // Redirect to the login page on error
+  }
 });

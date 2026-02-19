@@ -1,8 +1,9 @@
 import { Roboto } from "next/font/google";
-import Navbar from "@/components/navbar.jsx/Navbar";
+import Navbar from "@/components/navbar/Navbar";
 import Footer from "@/components/footer/Footer";
 import "./globals.css";
 import { ThemeProvider } from "@/context/ThemeContext";
+import Providers from "@/components/Providers";
 
 export const roboto = Roboto({
   subsets: ["latin"],
@@ -20,13 +21,15 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={roboto.variable}>
       <body>
-        <ThemeProvider>
-          <div className="container">
-            <Navbar />
-            {children}
-            <Footer />
-          </div>
-        </ThemeProvider>
+        <Providers>
+          <ThemeProvider>
+            <div className="container">
+              <Navbar />
+              {children}
+              <Footer />
+            </div>
+          </ThemeProvider>
+        </Providers>
       </body>
     </html>
   );
