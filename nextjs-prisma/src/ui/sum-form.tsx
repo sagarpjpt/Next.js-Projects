@@ -55,7 +55,8 @@ export default function SumForm() {
 
       {state.result !== null && (
         <p className={styles.result}>
-          Result from server: <strong>{state.result}</strong>
+          Result from server: <strong>{state.result}</strong><br />
+          Stored in DB!
         </p>
       )}
 

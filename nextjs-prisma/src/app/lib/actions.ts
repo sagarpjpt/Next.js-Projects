@@ -1,6 +1,7 @@
 "use server";
 
 import prisma from "@/app/lib/prisma";
+import { revalidatePath } from "next/cache";
 import type { SumState } from "@/app/lib/types";
 
 export async function calculateSum(
@@ -22,14 +23,13 @@ export async function calculateSum(
 
   const result = num1 + num2;
 
-  // save to DB
+  // save to db
   await prisma.result.create({
-    data: {
-      num1,
-      num2,
-      result,
-    },
+    data: { num1, num2, result },
   });
+
+  // 
+  revalidatePath("/");
 
   return {
     result,
@@ -37,3 +37,16 @@ export async function calculateSum(
     attempts,
   };
 }
+
+// delete result
+export async function deleteResult(formData: FormData) {
+  const id = Number(formData.get('id'))
+  if(Number.isNaN(id)) return;
+  await prisma.result.delete({
+    where: {id},
+  });
+
+  // refresh the page so resultlsit re-runs
+  revalidatePath('/')
+}
+
